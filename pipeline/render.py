@@ -12,7 +12,7 @@ scenes=[("intro",None,["오늘의 부동산 뉴스","[[1분 뉴스]]로 정리�
 for i,s in enumerate(nj["scenes"]):scenes.append((s["src"],f"{i+1:02d}",s["lines"],1.05,s["ctr"]))
 scenes.append(("outro",None,["[[매일 아침 8시 30분]]","부동산 1분 뉴스","@boozi_gang 팔로우"],1.0,dict(label="매일 아침",t="08:30")))
 STEP,LEAD,TAIL=0.85,0.25,0.9
-cfg=[dict(src=s,no=nn,lines=l,step=st,lead=LEAD,ctr=c,dur=LEAD+len(l)*st+TAIL) for s,nn,l,st,c in scenes]
+cfg=[dict(lay=(i+d.day)%3,mv=(i*2+d.day)%5,src=s,no=nn,lines=l,step=st,lead=LEAD,ctr=c,dur=LEAD+len(l)*st+TAIL) for i,(s,nn,l,st,c) in enumerate(scenes)]
 shutil.copy(f"{OUT}/bg0.jpg",f"{OUT}/bg{len(cfg)-1}.jpg")
 TOTAL=sum(c["dur"] for c in cfg);N=int(TOTAL*FPS)
 HTML="""<html><head><meta charset=utf-8><style>@@CSS@@
@@ -22,6 +22,8 @@ body{height:1920px;background:#000}
 .tag{position:absolute;left:70px;top:395px;font-family:'PT';font-weight:700;font-size:30px;letter-spacing:1px;color:#FFE500;opacity:0;z-index:4}
 .t .l{font-family:'PT';font-weight:800;font-size:66px;line-height:1.28;letter-spacing:-1.5px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.75);opacity:0;white-space:nowrap}
 .big .l{font-size:82px}.big .t{top:820px}
+.sc.lay1 .t{top:300px}.sc.lay1.big .t{top:330px}.sc.lay1 .tag{top:225px}
+.sc.lay2 .t{top:880px;align-items:center;text-align:center}.sc.lay2.big .t{top:900px}.sc.lay2 .tag{left:0;right:0;text-align:center;top:480px}
 mark{background:linear-gradient(#FFE500,#FFE500) left bottom/var(--w,0%) 5px no-repeat;color:#FFE500;padding:0 0 3px}
 .pb{position:absolute;left:0;top:0;height:6px;background:#FFE500;z-index:9;width:0}
 </style></head><body><canvas id=cv width=1080 height=1920 style="position:absolute;left:0;top:0"></canvas><div id=root></div>
