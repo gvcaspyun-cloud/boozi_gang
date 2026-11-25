@@ -10,7 +10,7 @@
    {"date":"YYYY-MM-DD","intro_q":"...","scenes":[{"src":"언론사 · MM.DD","lines":[4줄],"ctr":{"label":"...","n":숫자,"u":"단위"} 또는 {"label":"...","t":"텍스트"},"q":"사진 영어 검색어","mood":"up|down|deal|neutral"}] x10}
    - lines: 4줄, 줄당 약 16자 이내. 강조는 [[단어]], 카운트업 숫자는 #350#만. 톤은 편한 구어체(~예요/~했어요), 힙한 수사 금지, 숫자는 기사 근거만.
    - ctr: 큰 숫자 하나(n, dec:true면 소수1자리) 또는 텍스트 t. 기사에 없는 숫자 금지.
-   - mood: 갱스터 마스코트(AI로 만든 고정 이미지 pipeline/char/*.png를 움직여 씀. 매일 새로 생성하지 않음. 영상 하단/측면에 자동 배치)의 표정·동작. up=상승·증가·호재(점프), down=하락·감소·악재(풀죽음), deal=딜·매각·인수·수주(deal.png가 없으면 기본 포즈로 대체), neutral=그 외(손 흔들기).
+   - mood: (현재 비활성: render.py MASCOT=False) 갱스터 마스코트(AI로 만든 고정 이미지 pipeline/char/*.png를 움직여 씀. 매일 새로 생성하지 않음. 영상 하단/측면에 자동 배치)의 표정·동작. up=상승·증가·호재(점프), down=하락·감소·악재(풀죽음), deal=딜·매각·인수·수주(deal.png가 없으면 기본 포즈로 대체), neutral=그 외(손 흔들기).
    - q: 기사 내용과 시각적으로 맞는 사진 검색어. 10개 모두 서로 다른 피사체·구도로(예: 'office tower skyline dusk', 'logistics warehouse aerial', 'hotel lobby interior', 'construction site cranes', 'handshake business meeting', 'subway commuters seoul', 'apartment complex night windows'). 콘크리트 외벽 클로즈업·동전·열쇠 같은 흔한 컷은 하루 최대 1장. 사람 얼굴 중심은 피함.
 4. `UNSPLASH_KEY=<키> python3 pipeline/fetch_photos.py workdir` 후 `python3 -I pipeline/render.py workdir` → workdir/reel.mp4 (약 62초, BGM 포함). 영상 중간 프레임 1~2개 `--prev`로 확인(글자 잘림/겹침).
 5. workdir/news.json과 by.json도 reels/YYYY-MM-DD/에 함께 복사한다(다음날 중복 회피용). reel.mp4를 reels/YYYY-MM-DD/reel.mp4로 복사 → git commit(-c user.name=boozi -c user.email=gvcaspyun@gmail.com) → push.
