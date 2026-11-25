@@ -1,5 +1,5 @@
-https://www.canva.com 000
-https://media.canva.com 000
-https://export-download.canva.com 000
+https://www.canva.com 403
+https://media.canva.com 400
+https://export-download.canva.com 403
 https://api.unsplash.com 301
-# rerun 2026-11-25T04:36:12Z
+# rerun 2026-11-25T04:57:48Z
