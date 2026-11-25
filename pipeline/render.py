@@ -14,6 +14,8 @@ scenes.append(("outro",None,["[[매일 아침 8시 30분]]","부동산 1분 뉴�
 STEP,LEAD,TAIL=0.85,0.25,0.9
 MD=['neutral']+[s.get('mood','neutral') for s in nj['scenes']]+['neutral']
 cfg=[dict(mood=(MD[i] if i<len(MD) else 'neutral'),lay=(i+d.day)%3,mv=(i*2+d.day)%5,src=s,no=nn,lines=l,step=st,lead=LEAD,ctr=c,dur=LEAD+len(l)*st+TAIL) for i,(s,nn,l,st,c) in enumerate(scenes)]
+for n in ["neutral","up","down","deal"]:
+    sp=f"{H}/char/{n}.png"; shutil.copy(sp if os.path.exists(sp) else f"{H}/char/neutral.png",f"{OUT}/ch_{n}.png")
 shutil.copy(f"{OUT}/bg0.jpg",f"{OUT}/bg{len(cfg)-1}.jpg")
 TOTAL=sum(c["dur"] for c in cfg);N=int(TOTAL*FPS)
 HTML="""<html><head><meta charset=utf-8><style>@@CSS@@
@@ -29,9 +31,9 @@ mark{background:linear-gradient(#FFE500,#FFE500) left bottom/var(--w,0%) 5px no-
 .pb{position:absolute;left:0;top:0;height:6px;background:#FFE500;z-index:9;width:0}
 </style></head><body><canvas id=cv width=1080 height=1920 style="position:absolute;left:0;top:0"></canvas><canvas id=mc width=800 height=800 style="position:absolute;z-index:3;left:360px;top:1100px"></canvas><div id=root></div>
 <div class=pb id=pb></div>
-<script>@@MJS@@</script><script>@@JS@@</script></body></html>"""
+<script>@@JS@@</script></body></html>"""
 js=open(f"{H}/vid.js").read().replace("@@CFG@@",json.dumps(cfg)).replace("@@TOT@@",str(TOTAL)).replace("@@OUT@@",OUT)
-open(f"{OUT}/p.html","w").write(HTML.replace("@@CSS@@",CSS).replace("@@MJS@@",open(f"{H}/mascot.js").read()).replace("@@JS@@",js))
+open(f"{OUT}/p.html","w").write(HTML.replace("@@CSS@@",CSS).replace("@@JS@@",js))
 offs=[0]
 for c in cfg: offs.append(offs[-1]+c["dur"])
 async def prev():
