@@ -12,7 +12,8 @@ scenes=[("intro",None,["오늘의 부동산 뉴스","[[1분 뉴스]]로 정리�
 for i,s in enumerate(nj["scenes"]):scenes.append((s["src"],f"{i+1:02d}",s["lines"],1.05,s["ctr"]))
 scenes.append(("outro",None,["[[매일 아침 8시 30분]]","부동산 1분 뉴스","@boozi_gang 팔로우"],1.0,dict(label="매일 아침",t="08:30")))
 STEP,LEAD,TAIL=0.85,0.25,0.9
-cfg=[dict(lay=(i+d.day)%3,mv=(i*2+d.day)%5,src=s,no=nn,lines=l,step=st,lead=LEAD,ctr=c,dur=LEAD+len(l)*st+TAIL) for i,(s,nn,l,st,c) in enumerate(scenes)]
+MD=['neutral']+[s.get('mood','neutral') for s in nj['scenes']]+['neutral']
+cfg=[dict(mood=(MD[i] if i<len(MD) else 'neutral'),lay=(i+d.day)%3,mv=(i*2+d.day)%5,src=s,no=nn,lines=l,step=st,lead=LEAD,ctr=c,dur=LEAD+len(l)*st+TAIL) for i,(s,nn,l,st,c) in enumerate(scenes)]
 shutil.copy(f"{OUT}/bg0.jpg",f"{OUT}/bg{len(cfg)-1}.jpg")
 TOTAL=sum(c["dur"] for c in cfg);N=int(TOTAL*FPS)
 HTML="""<html><head><meta charset=utf-8><style>@@CSS@@
@@ -26,16 +27,16 @@ body{height:1920px;background:#000}
 .sc.lay2 .t{top:880px;align-items:center;text-align:center}.sc.lay2.big .t{top:900px}.sc.lay2 .tag{left:0;right:0;text-align:center;top:480px}
 mark{background:linear-gradient(#FFE500,#FFE500) left bottom/var(--w,0%) 5px no-repeat;color:#FFE500;padding:0 0 3px}
 .pb{position:absolute;left:0;top:0;height:6px;background:#FFE500;z-index:9;width:0}
-</style></head><body><canvas id=cv width=1080 height=1920 style="position:absolute;left:0;top:0"></canvas><div id=root></div>
+</style></head><body><canvas id=cv width=1080 height=1920 style="position:absolute;left:0;top:0"></canvas><canvas id=mc width=640 height=640 style="position:absolute;z-index:3;left:440px;top:1180px"></canvas><div id=root></div>
 <div class=pb id=pb></div>
-<script>@@JS@@</script></body></html>"""
+<script>@@MJS@@</script><script>@@JS@@</script></body></html>"""
 js=open(f"{H}/vid.js").read().replace("@@CFG@@",json.dumps(cfg)).replace("@@TOT@@",str(TOTAL)).replace("@@OUT@@",OUT)
-open(f"{OUT}/p.html","w").write(HTML.replace("@@CSS@@",CSS).replace("@@JS@@",js))
+open(f"{OUT}/p.html","w").write(HTML.replace("@@CSS@@",CSS).replace("@@MJS@@",open(f"{H}/mascot.js").read()).replace("@@JS@@",js))
 offs=[0]
 for c in cfg: offs.append(offs[-1]+c["dur"])
 async def prev():
     async with async_playwright() as p:
-        b=await p.chromium.launch(args=["--allow-file-access-from-files"]);pg=await b.new_page(viewport={"width":1080,"height":1920});pg.on("pageerror",lambda e:print("ERR",e))
+        b=await p.chromium.launch(args=["--allow-file-access-from-files","--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader","--ignore-gpu-blocklist"]);pg=await b.new_page(viewport={"width":1080,"height":1920});pg.on("pageerror",lambda e:print("ERR",e))
         await pg.goto(f"file://{OUT}/p.html");await pg.wait_for_function("window.ready===true",timeout=60000);await pg.wait_for_timeout(600)
         for i in range(len(cfg)):
             await pg.evaluate(f"draw({offs[i]+cfg[i]['dur']-0.5})");await pg.screenshot(path=f"{OUT}/prev_{i}.png")
@@ -50,7 +51,7 @@ async def work(b,ci,a,z):
 async def main():
     W=4;ch=[(i*N//W,(i+1)*N//W) for i in range(W)]
     async with async_playwright() as p:
-        b=await p.chromium.launch(args=["--allow-file-access-from-files"])
+        b=await p.chromium.launch(args=["--allow-file-access-from-files","--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader","--ignore-gpu-blocklist"])
         await asyncio.gather(*[work(b,i,a,z) for i,(a,z) in enumerate(ch)]);await b.close()
     open(f"{OUT}/all.txt","w").write("".join(f"file '{OUT}/c{i}.mp4'\n" for i in range(W)))
     subprocess.run(["ffmpeg","-y","-loglevel","error","-f","concat","-safe","0","-i",f"{OUT}/all.txt","-c","copy",f"{OUT}/v.tmp.mp4"],check=True)
